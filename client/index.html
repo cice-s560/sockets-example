@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Sockets</title>
+  </head>
+  <body>
+    <h1>Ejemplo sockets</h1>
+
+    <form id="form">
+      <input id="input" type="text" placeholder="Texto a enviar" />
+    </form>
+    <div id="screen"></div>
+
+    <nav>
+      <button id="saluda">Saluda</button>
+      <button id="adios">Adios</button>
+    </nav>
+
+    <script>
+      const $screen = document.getElementById("screen");
+      const $saluda = document.getElementById("saluda");
+      const $adios = document.getElementById("adios");
+      const $form = document.getElementById("form");
+      const $input = document.getElementById("input");
+
+      const socket = new WebSocket("ws://localhost:3002");
+      socket.addEventListener("open", initSocket);
+      socket.addEventListener("message", onMessage);
+
+      function initSocket(e) {
+        $screen.innerText = "Conexión";
+      }
+
+      function onMessage(e) {
+        $screen.innerText = `Nuevo mensaje: ${e.data}`;
+      }
+
+      function sendSaludo(e) {
+        socket.send(
+          JSON.stringify({ type: "SALUDO", payload: "Hola desde el cliente" })
+        );
+      }
+
+      function submitMessage(e) {
+        const value = $input.value;
+
+        socket.send(JSON.stringify({ type: "MSG", payload: value }));
+
+        $input.value = "";
+      }
+
+      $saluda.addEventListener("click", sendSaludo);
+      $form.addEventListener("submit", submitMessage);
+    </script>
+  </body>
+</html>
